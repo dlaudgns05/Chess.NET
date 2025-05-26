@@ -93,7 +93,11 @@ class Pawn : public Piece{
                     return true;
                 }
                 //En passant
-
+                if (dynamic_cast<Pawn*> (board->moveHistory.back().piece)&&
+                    board->moveHistory.back().from == std::make_pair(to.first, to.second + (white ? 1 : -1)) &&
+                    board->moveHistory.back().to == std::make_pair(to.first, to.second - (white ? 1 : -1))){
+                    return true;
+                }
             }
             return false;
         }
