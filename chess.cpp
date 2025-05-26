@@ -45,14 +45,7 @@ class Piece{
         Piece(bool W) : white(W) {}
         bool white;
         
-        virtual void move(Board* board, const std::pair<int, int>& to){}
-        virtual bool canMoveTo(Board* board, const std::pair<int, int>& to) { return false; }
-};
-
-class Pawn : public Piece{
-    public:
-        Pawn(bool W) : Piece(W) {}
-        void move(Board* board, const std::pair<int, int>& to) override {
+        virtual void move(Board* board, const std::pair<int, int>& to) {
             if (canMoveTo(board, to)) {
                 std::pair<int, int> currentPos = board->findPieceCoordinates(this);
                 if (board->isOccupied(to)) {
@@ -62,9 +55,15 @@ class Pawn : public Piece{
                 board->removePiece(currentPos);
                 board->moveHistory.push_back({currentPos, to, this});
             } else {
-                std::cout << "Invalid move for Pawn." << std::endl;
+                std::cout << "Invalid move." << std::endl;
             }
         }
+        virtual bool canMoveTo(Board* board, const std::pair<int, int>& to) { return false; }
+};
+
+class Pawn : public Piece{
+    public:
+        Pawn(bool W) : Piece(W) {}
         bool canMoveTo(Board* board, const std::pair<int, int>& to) override {
             if(to.first < 0 || to.first > 7 || to.second < 0 || to.second > 7) {
                 return false; 
@@ -106,18 +105,6 @@ class Pawn : public Piece{
 class Knight : public Piece{
     public:
         Knight(bool W) : Piece(W) {}
-        void move(Board* board, const std::pair<int, int>& to) override {
-            if (canMoveTo(board, to)) {
-                std::pair<int, int> currentPos = board->findPieceCoordinates(this);
-                if (board->isOccupied(to)) {
-                    board->removePiece(to);
-                }
-                board->placePiece(this, to);
-                board->removePiece(currentPos);
-            } else {
-                std::cout << "Invalid move for Knight." << std::endl;
-            }
-        }
         bool canMoveTo(Board* board, const std::pair<int, int>& to) override {
             if(to.first < 0 || to.first > 7 || to.second < 0 || to.second > 7) {
                 return false; 
