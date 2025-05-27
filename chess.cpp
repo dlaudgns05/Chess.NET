@@ -58,13 +58,13 @@ class Piece{
                 std::cout << "Invalid move." << std::endl;
             }
         }
-        virtual bool canMoveTo(Board* board, const std::pair<int, int>& to) { return false; }
+        virtual bool canMoveTo(const Board* board, const std::pair<int, int>& to) { return false; }
 };
 
 class Pawn : public Piece{
     public:
         Pawn(bool W) : Piece(W) {}
-        bool canMoveTo(Board* board, const std::pair<int, int>& to) override {
+        bool canMoveTo(const Board* board, const std::pair<int, int>& to) override {
             if(to.first < 0 || to.first > 7 || to.second < 0 || to.second > 7) {
                 return false; 
             }
@@ -105,7 +105,7 @@ class Pawn : public Piece{
 class Knight : public Piece{
     public:
         Knight(bool W) : Piece(W) {}
-        bool canMoveTo(Board* board, const std::pair<int, int>& to) override {
+        bool canMoveTo(const Board* board, const std::pair<int, int>& to) override {
             if(to.first < 0 || to.first > 7 || to.second < 0 || to.second > 7) {
                 return false; 
             }
@@ -119,6 +119,108 @@ class Knight : public Piece{
                 if (!(board->isOccupiedByWhite(to) == white)) {
                     return true;
                 }
+            }
+            return false;
+        }
+};
+
+class Bishop : public Piece{
+    public:
+        Bishop(bool W) : Piece(W) {}
+        bool canMoveTo(const Board* board, const std::pair<int, int>& to) override {
+            if(to.first < 0 || to.first > 7 || to.second < 0 || to.second > 7) {
+                return false; 
+            }
+            std::pair<int, int> currentPos = board->findPieceCoordinates(this);
+            if (currentPos.first == -1) {
+                return false;
+            }
+            if ((abs(to.first - currentPos.first) == abs(to.second - currentPos.second)) &&
+                (to.first != currentPos.first || to.second != currentPos.second)) {
+                int xStep = (to.first - currentPos.first > 0) ? 1 : -1;
+                int yStep = (to.second - currentPos.second > 0) ? 1 : -1;
+                for (int i = 1; i < abs(to.first - currentPos.first); ++i) {
+                    if (board->isOccupied({currentPos.first + i * xStep, currentPos.second + i * yStep})) {
+                        return false; // Path is blocked
+                    }
+                }
+                // Can move if destination is empty or occupied by opponent
+                if (!(board->isOccupiedByWhite(to) == white)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+};
+
+class Rook : public Piece{
+    public:
+        Rook(bool W) : Piece(W) {}
+        bool canMoveTo(const Board* board, const std::pair<int, int>& to) override {
+            if(to.first < 0 || to.first > 7 || to.second < 0 || to.second > 7) {
+                return false; 
+            }
+            std::pair<int, int> currentPos = board->findPieceCoordinates(this);
+            if (currentPos.first == -1) {
+                return false;
+            }
+            if ((to.first == currentPos.first) != (to.second == currentPos.second)) {
+                int xStep = (to.first - currentPos.first > 0) ? 1 : (to.first - currentPos.first < 0 ? -1 : 0);
+                int yStep = (to.second - currentPos.second > 0) ? 1 : (to.second - currentPos.second < 0 ? -1 : 0);
+                for (int i = 1; i < std::max(abs(to.first - currentPos.first), abs(to.second - currentPos.second)); ++i) {
+                    if (board->isOccupied({currentPos.first + i * xStep, currentPos.second + i * yStep})) {
+                        return false; // Path is blocked
+                    }
+                }
+                // Can move if destination is empty or occupied by opponent
+                if (!(board->isOccupiedByWhite(to) == white)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+};
+
+class Queen : public Piece{
+    public:
+        Queen(bool W) : Piece(W) {}
+        bool canMoveTo(const Board* board, const std::pair<int, int>& to) override {
+            if(to.first < 0 || to.first > 7 || to.second < 0 || to.second > 7) {
+                return false; 
+            }
+            std::pair<int, int> currentPos = board->findPieceCoordinates(this);
+            if (currentPos.first == -1) {
+                return false;
+            }
+            if (((abs(to.first - currentPos.first) == abs(to.second - currentPos.second)) ||
+                (to.first == currentPos.first || to.second == currentPos.second)) &&
+                (to.first != currentPos.first || to.second != currentPos.second)) {
+                int xStep = (to.first - currentPos.first > 0) ? 1 : (to.first - currentPos.first < 0 ? -1 : 0);
+                int yStep = (to.second - currentPos.second > 0) ? 1 : (to.second - currentPos.second < 0 ? -1 : 0);
+                for (int i = 1; i < std::max(abs(to.first - currentPos.first), abs(to.second - currentPos.second)); ++i) {
+                    if (board->isOccupied({currentPos.first + i * xStep, currentPos.second + i * yStep})) {
+                        return false; // Path is blocked
+                    }
+                }
+                // Can move if destination is empty or occupied by opponent
+                if (!(board->isOccupiedByWhite(to) == white)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+};
+
+class King : public Piece{
+    public:
+        King(bool W) : Piece(W) {}
+        bool canMoveTo(const Board* board, const std::pair<int, int>& to) override {
+            if(to.first < 0 || to.first > 7 || to.second < 0 || to.second > 7) {
+                return false; 
+            }
+            std::pair<int, int> currentPos = board->findPieceCoordinates(this);
+            if (currentPos.first == -1) {
+                return false;
             }
             return false;
         }
